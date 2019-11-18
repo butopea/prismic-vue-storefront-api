@@ -25,7 +25,7 @@ This is the Vue Storefront API part (extension) of the Prismic integration. It r
 Run this command in the VSF API root folder to install the Prismic extension: 
 
 ```shell script
-git submodule add git@github.com:butopea/prismic-vue-storefront-api.git src/api/extensions/
+git submodule add git@github.com:butopea/prismic-vue-storefront-api.git src/api/extensions/prismic
 ```
 
 Add the following block to your configuration file (config/local.json):
