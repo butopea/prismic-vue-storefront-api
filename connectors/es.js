@@ -4,7 +4,7 @@ import errors from '../static/errors'
 import { prismicFieldPrefix } from '../helpers/processors'
 
 const getIndexByLanguage = (language) => {
-    return config.prismic.indexToLocale.find(el => el.language == language) || elasticSearchIndex()
+    return config.extensions.prismic.indexToLocale.find(el => el.language == language) || elasticSearchIndex()
 }
 
 const elasticSearchIndex = (indexName) => {

@@ -14,7 +14,7 @@ export const syncPrismic = async (currentPage = null) => {
     console.log( info.syncDbCleared + config.elasticsearch.indices.join(','))
   })
 
-  const fetchedPage = await prismicApi(null, null, config.prismic.syncPageSize, currentPage)
+  const fetchedPage = await prismicApi(null, null, config.extensions.prismic.syncPageSize, currentPage)
 
   await saveToElasticSearch(fetchedPage.results)
 

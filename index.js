@@ -23,7 +23,7 @@ module.exports = ({ config }) => {
   api.post('/webhook', (req, res) => {
     if(!req.body) return apiStatus(res, errors.invalidWebhookCallback, 400)
     if(!req.body.type || !['api-update', 'test-update'].includes(req.body.type)) apiStatus(res, errors.invalidWebhookCallback, 400)
-    if(!req.body.secret || req.body.secret !== config.prismic.webhookSecret) return apiStatus(res, errors.invalidWebhookSecret, 401)
+    if(!req.body.secret || req.body.secret !== config.extensions.prismic.webhookSecret) return apiStatus(res, errors.invalidWebhookSecret, 401)
 
     syncPrismic().then(result => {
       return apiStatus(res, result, 200)

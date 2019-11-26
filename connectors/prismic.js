@@ -30,10 +30,10 @@ export const prismicApi = async (query = null, req = null, pageSize = 20, curren
     prismicQuery = Prismic.Predicates.at('document.' + documentType, byValue)
   }
   try {
-    const api = await Prismic.getApi(config.prismic.apiEndpoint,
+    const api = await Prismic.getApi(config.extensions.prismic.apiEndpoint,
       {
         req: req,
-        accessToken: config.prismic.accessToken || ''
+        accessToken: config.extensions.prismic.accessToken || ''
       })
     return await api.query(prismicQuery, queryOptions)
   }

@@ -14,54 +14,67 @@ This is the Vue Storefront API part (extension) of the Prismic integration. It r
 - [X] Webhook sync callback support (on publish)
 - [X] ElasticSearch data cache
 - [X] Content retrieval based on ID/UID, custom types, tags, filters, and languages
-- [ ] Document search
-- [ ] CLI sync script (cronjob)
+- [ ] CLI manual sync script
 
 ## Installation (Vue Storefront API)
 
 Run this command in the VSF API root folder to install the Prismic extension: 
 
 ```shell script
-git submodule add git@github.com:butopea/prismic-vue-storefront-api.git src/api/extensions/
+git submodule add git@github.com:butopea/prismic-vue-storefront-api.git src/api/extensions/prismic
 ```
+Within your config file (config/local.json):
 
-Add the following block to your configuration file (config/local.json):
+Add Prismic to the `registeredExtensions` list to activate it:
 
 ```json
-"prismic": {
-  "apiEndpoint": "https://<YOUR_PRISMIC_REPO>.prismic.io/api/v2",
-  "accessToken": "",
-  "webhookSecret": "",
-  "cmsBlockEntityType": "cms-block",
-  "cmsPageEntityType": "cms-page",
-  "indexToLocale": [
-    { 
-      "index": "vue_storefront_catalog",
-      "language": "en-gb"
-    }
-  ],
-  "retrieveItemIfNotCached": true,
-  "syncPageSize": 20
+{
+  ...
+  "registeredExtensions": {
+    ...
+    "prismic"
+  }
 }
 ```
 
+
+Add the Prismic extension settings to the `extensions` list:
+
+```json
+{
+  ...
+  "extensions": {
+    ...
+    "prismic": {
+      "apiEndpoint": "https://<YOUR_PRISMIC_REPO>.prismic.io/api/v2",
+      "accessToken": "",
+      "webhookSecret": "",
+      "indexToLocale": [
+        { 
+          "index": "vue_storefront_catalog",
+          "language": "en-gb"
+        }
+      ],
+      "syncPageSize": 20
+    }
+  }
+}
+...
+```
+
 ## Configuration explanation
+
 * `apiEndpoint`
   - Name of your Prismic repository (keep the rest of the URL the same, especially `/api/v2`).
 * `accessToken`
   - If you have set up your Prismic repository with a private API, you need to add a new permanent access token and set it here.
 * `webhookSecret`
   - The secret passphrase sent by Prismic with each webhook callback.  
-* `cmsBlockEntityType`
-  - The type name given to your CMS block content types on Prismic.
-* `cmsPageEntityType`
-  - The type name given to your CMS page content types on Prismic.
 * `indexToLocale`
   - Contains a mapping of each ElasticSearch index to its document language.
-* `retrieveItemIfNotCached`
-  - If the requested item (page/block) is not cached in ElasticSearch, the extension will attempt to load it from Prismic and store it in the database.
 * `syncPageSize`
   - Number of pages to retrieve per request during the sync (default: `20`, maximum: `100`)
+
 ## Credits
 
 Made with ❤ by [Butopêa](https://butopea.com)
