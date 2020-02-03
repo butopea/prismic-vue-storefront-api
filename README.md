@@ -2,7 +2,7 @@
 
 **[** WORK IN PROGRESS **]**
 
-This is the Vue Storefront API part (extension) of the Prismic integration. It requires the [Vue Storefront counterpart (module)](https://github.com/butopea/prismic-vue-storefront) to work.  
+This is the Vue Storefront API part (extension) of the Prismic integration. It requires the [Vue Storefront counterpart (module)](https://github.com/butopea/prismic-vue-storefront) to work.
 
 ## Data Flow
 
@@ -14,11 +14,11 @@ This is the Vue Storefront API part (extension) of the Prismic integration. It r
 - [X] Webhook sync callback support (on publish)
 - [X] ElasticSearch data cache
 - [X] Content retrieval based on ID/UID, custom types, tags, filters, and languages
+- [ ] Image caching
 - [ ] CLI manual sync script
-
 ## Installation (Vue Storefront API)
 
-Run this command in the VSF API root folder to install the Prismic extension: 
+Run this command in the VSF API root folder to install the Prismic extension:
 
 ```shell script
 git submodule add git@github.com:butopea/prismic-vue-storefront-api.git src/api/extensions/prismic
@@ -50,7 +50,7 @@ Add the Prismic extension settings to the `extensions` list:
       "accessToken": "",
       "webhookSecret": "",
       "indexToLocale": [
-        { 
+        {
           "index": "vue_storefront_catalog",
           "language": "en-gb"
         }
@@ -62,6 +62,22 @@ Add the Prismic extension settings to the `extensions` list:
 ...
 ```
 
+Remember to add the following mappings to the `prismic` type in your ElasticSearch importer:
+
+```javascript
+db.indices.putMapping({
+    index: indexName,
+    type: "prismic",
+    body: {
+      properties: {
+        prismic_uid: { type: "keyword" },
+        prismic_type: { type: "keyword" },
+        prismic_tags: { type: "keyword" }
+      }
+    }
+})
+```
+
 ## Configuration explanation
 
 * `apiEndpoint`
@@ -69,11 +85,19 @@ Add the Prismic extension settings to the `extensions` list:
 * `accessToken`
   - If you have set up your Prismic repository with a private API, you need to add a new permanent access token and set it here.
 * `webhookSecret`
-  - The secret passphrase sent by Prismic with each webhook callback.  
+  - The secret passphrase sent by Prismic with each webhook callback.
 * `indexToLocale`
   - Contains a mapping of each ElasticSearch index to its document language.
 * `syncPageSize`
   - Number of pages to retrieve per request during the sync (default: `20`, maximum: `100`)
+
+## Sync script
+
+To manually sync the database, run the following command in Vue Storefront API's root directory:
+
+```shell script
+node src/api/extensions/prismic/scripts/sync.js
+```
 
 ## Credits
 

@@ -4,7 +4,7 @@ import errors from '../static/errors'
 import { prismicFieldPrefix } from '../helpers/processors'
 
 const getIndexByLanguage = (language) => {
-    return config.extensions.prismic.indexToLocale.find(el => el.language == language) || elasticSearchIndex()
+  return config.extensions.prismic.indexToLocale.find(el => el.language === language) || elasticSearchIndex()
 }
 
 const elasticSearchIndex = (indexName) => {
@@ -22,13 +22,13 @@ const elasticSearchIndex = (indexName) => {
 }
 
 const elasticSearchClient = () => {
-  if (config.elasticsearch.user && config.elasticsearch.password && config.elasticsearch.host && config.elasticsearch.port) {
-    const client = new elasticsearch.Client( {
+  if (config.elasticsearch.host && config.elasticsearch.port) {
+    const client = new elasticsearch.Client({
       host: [
-        `http://${config.elasticsearch.user}:${config.elasticsearch.password}@${config.elasticsearch.host}:${config.elasticsearch.port}/`
+        `http://${config.elasticsearch.host}:${config.elasticsearch.port}/`
       ]
     })
-    client.cluster.health({},function(err,resp) {
+    client.cluster.health({}, (err, resp) => {
       if (!resp) {
         throw new Error(errors.esErrorConnection)
       }
@@ -47,8 +47,8 @@ const saveToElasticSearch = (prismicData) => {
       id: element.id,
       type: 'prismic',
       body: prismicFieldPrefix(element)
-    },(err) => {
-      if(err) {
+    }, (err) => {
+      if (err) {
         throw new Error(errors.esError + err)
       }
     })

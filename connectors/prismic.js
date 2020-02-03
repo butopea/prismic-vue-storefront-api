@@ -8,22 +8,22 @@ export const prismicApi = async (query = null, req = null, pageSize = 20, curren
   let orderings
   let prismicQuery
   let queryOptions = {
-    "pageSize": pageSize
+    'pageSize': pageSize
   }
 
-  if(extraQueryOptions) queryOptions = {...queryOptions, ...extraQueryOptions}
+  if (extraQueryOptions) queryOptions = {...queryOptions, ...extraQueryOptions}
 
-  if(!query){
+  if (!query) {
     prismicQuery = ''
   } else {
-    if(query.hasOwnProperty('_id')){
+    if (query.hasOwnProperty('_id')) {
       byValue = query._id
     }
     if (query.hasOwnProperty('prismic_type')) {
       documentType = 'type'
       byValue = query.prismic_type
     }
-    if(query.hasOwnProperty('prismic_tags')){
+    if (query.hasOwnProperty('prismic_tags')) {
       documentType = 'tags'
       byValue = [query.prismic_tags]
     }
@@ -36,8 +36,7 @@ export const prismicApi = async (query = null, req = null, pageSize = 20, curren
         accessToken: config.extensions.prismic.accessToken || ''
       })
     return await api.query(prismicQuery, queryOptions)
-  }
-  catch (err) {
+  } catch (err) {
     throw new Error(errors.prismicFetchErrorThrow + err)
   }
 }
