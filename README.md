@@ -78,6 +78,20 @@ db.indices.putMapping({
 })
 ```
 
+You also need to add the `prismic` type in https://github.com/DivanteLtd/vue-storefront/blob/f4a37fb2a256e34152ce89b8e43219b94f91090a/core/lib/search/adapter/api/searchAdapter.ts#L193
+
+```
+this.registerEntityType('prismic', {
+      queryProcessor: (query) => {
+        // function that can modify the query each time before it's being executed
+        return query
+      },
+      resultProcessor: (resp, start, size) => {
+        return this.handleResult(resp, 'prismic', start, size)
+      }
+    })
+```
+
 ## Configuration explanation
 
 * `apiEndpoint`
