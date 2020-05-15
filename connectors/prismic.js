@@ -8,7 +8,8 @@ export const prismicApi = async (query = null, req = null, pageSize = 20, curren
   let orderings
   let prismicQuery
   let queryOptions = {
-    'pageSize': pageSize
+    'pageSize': pageSize,
+    'page': currentPage
   }
 
   if (extraQueryOptions) queryOptions = {...queryOptions, ...extraQueryOptions}
