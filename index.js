@@ -6,7 +6,6 @@ import { prismicApi } from './connectors/prismic';
 import { syncPrismic } from './helpers/sync'
 import Path from 'path'
 
-
 module.exports = ({ config }) => {
   /* ------- Initialization ------- */
   checkConfig(config)
@@ -28,7 +27,7 @@ module.exports = ({ config }) => {
     })
   })
 
-  api.get('/images/:name', function (req, res, next) {
+  api.get('/images/:name', (req, res, next) => {
     var options = {
       root: Path.join(__dirname, 'images'),
       dotfiles: 'deny',
@@ -39,7 +38,7 @@ module.exports = ({ config }) => {
     }
 
     var fileName = req.params.name
-    res.sendFile(fileName, options, function (err) {
+    res.sendFile(fileName, options, (err) => {
       if (err) {
         next(err)
       } else {
