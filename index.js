@@ -4,6 +4,8 @@ import { checkConfig } from './helpers/config'
 import { apiStatus } from '../../../lib/util'
 import { prismicApi } from './connectors/prismic';
 import { syncPrismic } from './helpers/sync'
+import Path from 'path'
+
 
 module.exports = ({ config }) => {
   /* ------- Initialization ------- */
@@ -23,6 +25,26 @@ module.exports = ({ config }) => {
     }).catch(err => {
       console.error(errors.syncError, err)
       return apiStatus(res, errors.syncError, 500)
+    })
+  })
+
+  api.get('/images/:name', function (req, res, next) {
+    var options = {
+      root: Path.join(__dirname, 'images'),
+      dotfiles: 'deny',
+      headers: {
+        'x-timestamp': Date.now(),
+        'x-sent': true
+      }
+    }
+
+    var fileName = req.params.name
+    res.sendFile(fileName, options, function (err) {
+      if (err) {
+        next(err)
+      } else {
+        console.log('Sent:', fileName)
+      }
     })
   })
 
