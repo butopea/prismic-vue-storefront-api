@@ -7,8 +7,9 @@
   "author": "Mohammad Tomaraei <themreza@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "prismic-javascript": "2.1.1",
-    "prismic-dom": "2.1.0"
+    "axios": "^0.21.0",
+    "prismic-dom": "2.1.0",
+    "prismic-javascript": "2.1.1"
   },
   "files": [
     "index.js",
