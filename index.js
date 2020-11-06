@@ -27,7 +27,7 @@ module.exports = ({ config }) => {
     })
   })
 
-  api.get('/images/:name', (req, res, next) => {
+  api.get('/images/:name', function (req, res, next) {
     var options = {
       root: Path.join(__dirname, 'images'),
       dotfiles: 'deny',
@@ -38,7 +38,7 @@ module.exports = ({ config }) => {
     }
 
     var fileName = req.params.name
-    res.sendFile(fileName, options, (err) => {
+    res.sendFile(fileName, options, function (err) {
       if (err) {
         next(err)
       } else {

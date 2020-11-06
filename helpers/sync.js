@@ -2,46 +2,29 @@ import config from 'config'
 import info from '../static/info'
 import { prismicApi } from '../connectors/prismic'
 import { elasticSearchClient, saveToElasticSearch } from '../connectors/es'
-import Axios from 'axios'
-import Fs from 'fs'
+import fs from 'fs'
+import request from 'request'
 import Path from 'path'
 
 const urlPath = '/api/ext/prismic/images/'
 
-// TODO: implement a feature to only update the added/updated/deleted items [requires users to always use a Prismic release]
-// Current approach: delete all the items of type prismic in every listed index and repopulate the data
-// TODO: Use a queueing system (Kue) for repositories with a large number of documents [currently unnecessary]
-
+const download = (url, path, callback) => {
+  request.head(url, (err, res, body) => {
+    request(url)
+      .pipe(fs.createWriteStream(path))
+      .on('close', callback)
+  })
+}
 const pairPathname = data =>
   data.reduce((acc, item) => {
     let url = new URL(item)
     // eslint-disable-next-line
     let lastSlashRegex = /([^\/]+$)/
     acc[url.pathname.match(lastSlashRegex)[0]] = item
-
     return acc;
-  }, {});
-
-async function downloadImage (pathname, url) {
-  const imgPath = Path.join(__dirname, '/../images/', pathname)
-  const writer = Fs.createWriteStream(imgPath)
-
-  const response = await Axios({
-    url,
-    method: 'GET',
-    responseType: 'stream'
-  })
-
-  response.data.pipe(writer)
-
-  return new Promise((resolve, reject) => {
-    writer.on('finish', resolve)
-    writer.on('error', reject)
-  })
-}
+}, {});
 
 async function cacheImages (results) {
-  // eslint-disable-next-line
   const regexUrl = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/gi
   const regexImages = /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png|jpeg|svg|webp)/
 
@@ -52,12 +35,20 @@ async function cacheImages (results) {
   let pathnameArray = pairPathname(imageUrls)
 
   await Promise.all(Object.keys(pathnameArray).map(async (key) => {
-    await downloadImage(key, pathnameArray[key])
+    let path = Path.join(__dirname, '/../images/', key)
+
+    await download(pathnameArray[key], path, () => {
+      console.log('Done!')
+    })
     esJson = esJson.replace(pathnameArray[key], urlPath + key)
   }));
 
   return JSON.parse(esJson)
 }
+
+// TODO: implement a feature to only update the added/updated/deleted items [requires users to always use a Prismic release]
+// Current approach: delete all the items of type prismic in every listed index and repopulate the data
+// TODO: Use a queueing system (Kue) for repositories with a large number of documents [currently unnecessary]
 
 export const syncPrismic = async (currentPage = null) => {
   if (!currentPage) {
