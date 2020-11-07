@@ -29,7 +29,7 @@ module.exports = ({ config }) => {
 
   api.get('/images/:name', function (req, res, next) {
     var options = {
-      root: Path.join(__dirname, 'images'),
+      root: Path.join('/tmp/prismic-images'),
       dotfiles: 'deny',
       headers: {
         'x-timestamp': Date.now(),

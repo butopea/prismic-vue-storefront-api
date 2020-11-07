@@ -35,7 +35,7 @@ async function cacheImages (results) {
   let pathnameArray = pairPathname(imageUrls)
 
   await Promise.all(Object.keys(pathnameArray).map(async (key) => {
-    let path = Path.join(__dirname, '/../images/', key)
+    let path = Path.join('/tmp/prismic-images/', key)
 
     await download(pathnameArray[key], path, () => {
       console.log('Done!')
