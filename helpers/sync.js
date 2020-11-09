@@ -34,8 +34,14 @@ async function cacheImages (results) {
   let imageUrls = urls.filter(element => element.match(regexImages))
   let pathnameArray = pairPathname(imageUrls)
 
+  let tmpDir = '/tmp/prismic-images'
+
+  if (!fs.existsSync(tmpDir)){
+    fs.mkdirSync(tmpDir);
+  }
+
   await Promise.all(Object.keys(pathnameArray).map(async (key) => {
-    let path = Path.join('/tmp/prismic-images/', key)
+    let path = Path.join(tmpDir + '/', key)
 
     await download(pathnameArray[key], path, () => {
       console.log('Done!')
