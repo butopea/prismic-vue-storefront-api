@@ -5,6 +5,7 @@ import { elasticSearchClient, saveToElasticSearch } from '../connectors/es'
 import fs from 'fs'
 import request from 'request'
 import Path from 'path'
+import querystring from 'querystring'
 
 const urlPath = '/api/ext/prismic/images/'
 
@@ -26,7 +27,7 @@ const pairPathname = data =>
 
 async function cacheImages (results) {
   const regexUrl = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/gi
-  const regexImages = /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png|jpeg|svg|webp)/
+  const regexImages = /(http(s?):)([/|.|\w|\+\%\s|-])*\.(?:jpg|gif|png|jpeg|svg|webp)/
 
   let esJson = JSON.stringify(results)
 
@@ -43,7 +44,7 @@ async function cacheImages (results) {
   await Promise.all(Object.keys(pathnameArray).map(async (key) => {
     let path = Path.join(tmpDir + '/', key)
 
-    await download(pathnameArray[key], path, () => {
+    await download(querystring.unescape(pathnameArray[key]), path, () => {
       console.log('Done!')
     })
     esJson = esJson.replace(pathnameArray[key], urlPath + key)
