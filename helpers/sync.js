@@ -45,7 +45,7 @@ async function cacheImages (results) {
     let parsedKey = querystring.unescape(key)
     let path = Path.join(tmpDir + '/', parsedKey)
     await download(querystring.unescape(pathnameArray[key]), path, () => {
-      console.log('Done!', pathnameArray[key])
+      console.log('Done!')
     })
     esJson = esJson.replace(pathnameArray[key], urlPath + parsedKey)
   }));
