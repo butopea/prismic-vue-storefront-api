@@ -42,12 +42,12 @@ async function cacheImages (results) {
   }
 
   await Promise.all(Object.keys(pathnameArray).map(async (key) => {
-    let path = Path.join(tmpDir + '/', key)
-
+    let parsedKey = querystring.unescape(key)
+    let path = Path.join(tmpDir + '/', parsedKey)
     await download(querystring.unescape(pathnameArray[key]), path, () => {
-      console.log('Done!')
+      console.log('Done!', pathnameArray[key])
     })
-    esJson = esJson.replace(pathnameArray[key], urlPath + key)
+    esJson = esJson.replace(pathnameArray[key], urlPath + parsedKey)
   }));
 
   return JSON.parse(esJson)
