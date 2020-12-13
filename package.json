@@ -11,8 +11,7 @@
     "image-type": "^4.1.0",
     "is-svg": "^4.2.1",
     "prismic-dom": "2.1.0",
-    "prismic-javascript": "2.1.1",
-    "read-chunk": "^3.2.0"
+    "prismic-javascript": "2.1.1"
   },
   "files": [
     "index.js",
