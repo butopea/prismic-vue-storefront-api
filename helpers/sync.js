@@ -28,7 +28,7 @@ const download = async (url, path, filename) => {
   if ('ext' in imageExt) {
     fileName = `${fileName}.${imageExt['ext']}`
   }
-  await fs.writeFileSync(`${path}${fileName}`, imageBuffer)
+  await fs.writeFileSync(`${path}/${fileName}`, imageBuffer)
   return fileName
 }
 
