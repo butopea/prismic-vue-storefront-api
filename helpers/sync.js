@@ -3,51 +3,54 @@ import info from '../static/info'
 import { prismicApi } from '../connectors/prismic'
 import { elasticSearchClient, saveToElasticSearch } from '../connectors/es'
 import fs from 'fs'
-import request from 'request'
-import Path from 'path'
-import querystring from 'querystring'
+import axios from 'axios'
+import crypto from 'crypto'
+import imageType from 'image-type'
+import isSvg from 'is-svg'
 
-const urlPath = '/api/ext/prismic/images/'
+const urlPath = '/api/ext/prismic/images'
 
-const download = (url, path, callback) => {
-  request.head(url, (err, res, body) => {
-    request(url)
-      .pipe(fs.createWriteStream(path))
-      .on('close', callback)
+const download = async (url, path, filename) => {
+  let fileName = filename
+  const response = await axios({
+    url,
+    method: 'GET',
+    responseType: 'arraybuffer'
   })
+  const imageBuffer = Buffer.from(response.data, 'binary')
+  let imageExt = imageType(imageBuffer)
+  if (imageExt == null && isSvg(imageBuffer)) {
+    imageExt = {
+      ext: 'svg',
+      mime: 'image/svg+xml'
+    }
+  }
+  if ('ext' in imageExt) {
+    fileName = `${fileName}.${imageExt['ext']}`
+  }
+  await fs.writeFileSync(`${path}${fileName}`, imageBuffer)
+  return fileName
 }
-const pairPathname = data =>
-  data.reduce((acc, item) => {
-    let url = new URL(item)
-    // eslint-disable-next-line
-    let lastSlashRegex = /([^\/]+$)/
-    acc[url.pathname.match(lastSlashRegex)[0]] = item
-    return acc;
-}, {});
 
 async function cacheImages (results) {
   const regexUrl = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/gi
-  const regexImages = /(http(s?):)([/|.|\w|\+\%\s|-])*\.(?:jpg|gif|png|jpeg|svg|webp)/
+  const regexImages = /\.(?:jpg|gif|png|jpeg|svg|webp)/
 
   let esJson = JSON.stringify(results)
 
   let urls = esJson.match(regexUrl)
   let imageUrls = urls.filter(element => element.match(regexImages))
-  let pathnameArray = pairPathname(imageUrls)
 
   let tmpDir = '/tmp/prismic-images'
 
-  if (!fs.existsSync(tmpDir)){
+  if (!fs.existsSync(tmpDir)) {
     fs.mkdirSync(tmpDir);
   }
 
-  await Promise.all(Object.keys(pathnameArray).map(async (key) => {
-    let parsedKey = querystring.unescape(key)
-    let path = Path.join(tmpDir + '/', parsedKey)
-    await download(querystring.unescape(pathnameArray[key]), path, () => {
-      console.log('Done!')
-    })
-    esJson = esJson.replace(pathnameArray[key], urlPath + parsedKey)
+  await Promise.all(Object.values(imageUrls).map(async (imageUrl) => {
+    let fileHash = crypto.createHash('md5').update(imageUrl).digest('hex')
+    let fileName = await download(imageUrl, tmpDir, fileHash)
+    esJson = esJson.replace(imageUrl, `${urlPath}/${fileName}`)
   }));
 
   return JSON.parse(esJson)
