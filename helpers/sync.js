@@ -33,6 +33,7 @@ const download = async (url, path, filename) => {
 }
 
 async function cacheImages (results) {
+  // eslint-disable-next-line no-useless-escape
   const regexUrl = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/gi
   const regexImages = /\.(?:jpg|gif|png|jpeg|svg|webp)/
 
