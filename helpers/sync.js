@@ -51,7 +51,7 @@ async function cacheImages (results) {
   await Promise.all(Object.values(imageUrls).map(async (imageUrl) => {
     let fileHash = crypto.createHash('md5').update(imageUrl).digest('hex')
     let fileName = await download(imageUrl, tmpDir, fileHash)
-    esJson = esJson.replace(imageUrl, `${urlPath}/${fileName}`)
+    esJson = esJson.replace(imageUrl, `${urlPath}/${fileName}?`)
   }));
 
   return JSON.parse(esJson)
