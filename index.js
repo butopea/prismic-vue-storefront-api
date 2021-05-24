@@ -31,6 +31,7 @@ module.exports = ({ config }) => {
     var options = {
       root: Path.join('/tmp/prismic-images'),
       dotfiles: 'deny',
+      cacheControl: false,
       headers: {
         'x-timestamp': Date.now(),
         'x-sent': true
