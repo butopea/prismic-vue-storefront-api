@@ -50,7 +50,8 @@ async function cacheImages (results) {
 
   await Promise.all(Object.values(imageUrls).map(async (imageUrl) => {
     let fileHash = crypto.createHash('md5').update(imageUrl).digest('hex')
-    if (config.extensions.prismic.assetsBlacklist.includes(fileHash)) {
+    if (config.extensions.prismic.assetsBlacklist && 
+        config.extensions.prismic.assetsBlacklist.includes(fileHash)) {
       fileHash = 'asset-' + fileHash;
     }
     let fileName = await download(imageUrl, tmpDir, fileHash)
