@@ -83,7 +83,7 @@ async function cacheImages (results) {
 // Current approach: delete all the items of type prismic in every listed index and repopulate the data
 // TODO: Use a queueing system (Kue) for repositories with a large number of documents [currently unnecessary]
 
-export const syncPrismic = async (currentPage = null) => {
+export const syncPrismic = async (currentPage = null, esData = []) => {
   if (!currentPage) {
     await elasticSearchClient().deleteByQuery({ // TODO: deleteByQuery without an explicit query is deprecated on ES 6+. Use _doc feature of ES 7 when VSF 1.11.0 gets released
       index: config.elasticsearch.indices,
@@ -97,13 +97,17 @@ export const syncPrismic = async (currentPage = null) => {
 
   const newJson = await cacheImages(fetchedPage.results)
 
-  await saveToElasticSearch(newJson)
-
+  esData.push(newJson)
+  
   console.log(info.syncPageComplete + fetchedPage.total_results_size + ' [' + fetchedPage.page + '/' + fetchedPage.total_pages + ']')
 
   if (fetchedPage.page && !fetchedPage.next_page) {
+    for (const jsonBlock of esData) {
+      await saveToElasticSearch(jsonBlock)
+    }
+    console.log(info.savedToES)
     return info.syncComplete
   } else {
-    syncPrismic(currentPage + 1)
+    syncPrismic(currentPage + 1, esData)
   }
 }
