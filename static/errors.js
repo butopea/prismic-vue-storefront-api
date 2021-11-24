@@ -9,5 +9,7 @@ export default {
   'configFieldNotFound': 'Prismic config field not found',
   'invalidWebhookCallback': 'Invalid webhook callback data',
   'invalidWebhookSecret': 'Invalid webhook secret',
-  'syncError': 'Sync failed'
+  'syncError': 'Sync failed',
+  'prismicFetchErrorThrow': 'Failed to fetch Prismic page',
+  'imageDownloadError': 'Error during images download'
 }
