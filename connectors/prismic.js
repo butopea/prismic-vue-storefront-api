@@ -30,14 +30,25 @@ export const prismicApi = async (query = null, req = null, pageSize = 20, curren
     }
     prismicQuery = Prismic.Predicates.at('document.' + documentType, byValue)
   }
-  try {
-    const api = await Prismic.getApi(config.extensions.prismic.apiEndpoint,
-      {
-        req: req,
-        accessToken: config.extensions.prismic.accessToken || ''
-      })
-    return await api.query(prismicQuery, queryOptions)
-  } catch (err) {
-    throw new Error(errors.prismicFetchErrorThrow + err)
+
+  let count = 0;
+  let maxTries = 3;
+
+  while(true) {
+    try {
+      const api = await Prismic.getApi(config.extensions.prismic.apiEndpoint,
+        {
+          req: req,
+          accessToken: config.extensions.prismic.accessToken || ''
+        })
+      return await api.query(prismicQuery, queryOptions)
+    } catch (err) {
+      count++;
+      if (count == maxTries){
+        throw new Error(errors.prismicFetchErrorThrow + err)
+      } else {
+        console.log('[Prismic Sync] Page Fetch ERROR, Retrying...')
+      }
+    }
   }
 }
